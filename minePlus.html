@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <style>
+        * {
+            text-align: center;
+        }
+
+        #board {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #board tr td {
+            border: 1px solid white;
+            background: #34da79;
+            width: 16px;
+            height: 16px;
+            text-align: center;
+        }
+
+        #board tr td.clicked {
+            background: #6c5ee7;
+        }
+
+        #board tr td.mine {
+            background: #FF0000;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>지뢰찾기</h1>
+    <table id=board>
+    </table>
+    <BUTTON onclick="genGrid();">새로운 게임</BUTTON>
+    <script>
+        let grid = document.getElementById("board");
+        let x, y;
+        let preX = [-1, -1, 0, 1, 1, 1, 0, -1];
+        let preY = [0, -1, -1, -1, 0, 1, 1, 1];
+        genGrid();
+
+        function genGrid() {
+            x = parseInt(prompt("X"));
+            y = parseInt(prompt("Y"));
+            grid.innerHTML = "";
+            for (let i = 0; i < y; i++) {
+                row = grid.insertRow(i);
+                for (var j = 0; j < x; j++) {
+                    cell = row.insertCell(j);
+                    var locX, locY;
+                    locX = document.createAttribute("X"); locX.value = j;
+                    locY = document.createAttribute("Y"); locY.value = i;
+                    cell.setAttributeNode(locX); cell.setAttributeNode(locY);
+                    cell.onclick = function () { clickBox(this); };
+                    var mine = document.createAttribute("mine");
+                    if (Math.random() < 0.3)
+                        mine.value = "true";
+                    else
+                        mine.value = "false";
+                    cell.setAttributeNode(mine);
+                }
+            }
+        }
+
+        function clickBox(cell) {
+            if (cell.getAttribute("mine") == "true") {
+                cell.className = "mine";
+                alert("게임이 종료되었습니다.");
+            } else {
+                cell.className = "clicked";
+                let mines = 0;
+                let cellX, cellY;
+                cellX = parseInt(cell.getAttribute("X")); cellY = parseInt(cell.getAttribute("Y"));
+                for(let i = 0 ; i < 8 ; i++){
+                    let checkX = cellX+preX[i];
+                    let checkY = cellY+preY[i];
+                    if(checkX < 0 || checkX >= x || checkY < 0 || checkY >= y){
+                        continue;
+                    }
+                    if(grid.rows[checkY].cells[checkX].getAttribute("mine") == "true"){
+                        mines += 1;
+                    }
+                }
+                cell.innerHTML = mines.toString();
+            }
+        }
+    </script>
+</body>
+
+</html>
